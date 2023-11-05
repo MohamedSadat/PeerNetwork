@@ -37,6 +37,7 @@ namespace PeerLib.Services
                         msg.Sender = reader.ReadString();
                         msg.Txt = reader.ReadString();
                         msg.Height = reader.ReadInt64();
+                        msg.MsgHash = reader.ReadString();
                         messages.Add(msg);
                     }
                 }
@@ -74,6 +75,10 @@ namespace PeerLib.Services
                     writer.Write(msg.Sender);
                     writer.Write(msg.Txt);
                     writer.Write(msg.Height);
+                    msg.MsgHash = MsgHashService.HashAlgoStd(msg);
+                    writer.Write(msg.MsgHash);
+
+
                 }
             }
       

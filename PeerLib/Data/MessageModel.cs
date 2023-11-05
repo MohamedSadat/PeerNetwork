@@ -11,5 +11,6 @@ namespace PeerLib.Data
         public string Txt { get; set; } = "";
         public string Sender { get; set; } = "";
         public long Height { get; set; } = 0;
+        public string MsgHash { get; set; } = "";
     }
 }
