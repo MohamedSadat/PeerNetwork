@@ -27,7 +27,11 @@ namespace PeerGateway.Controllers
         {
             return Ok(imsg.GetMessagesHeighr());
         }
-
+        [HttpGet("Validate")]
+        public ActionResult GetValidate()
+        {
+            return Ok(imsg.ValidateMsg());
+        }
 
         // POST api/<MessageController>
         [HttpPost]
@@ -35,6 +39,11 @@ namespace PeerGateway.Controllers
         {
             try
             {
+                if (MsgSign.Validate(msg) == false)
+                {
+                    return BadRequest("Invalid Signature");
+                }
+
                 await imsg.AddMsg(msg);
                 await imsg.PublishMsg(msg);
 
@@ -64,6 +73,22 @@ namespace PeerGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        // POST api/<MessageController>
+        [HttpPost("Sign")]
+        public async Task<ActionResult> Sign([FromBody] TransactionModel msg)
+        {
+            try
+            {
+              //  await imsg.AddMsg(msg);
+                //   await imsg.PublishMsg(msg);
+              var r=  MsgSign.Sign(msg.Message,msg.PrivateKey);
+                return Ok(r);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

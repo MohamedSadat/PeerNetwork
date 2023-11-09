@@ -1,0 +1,40 @@
+﻿@page "/"
+@using PeerLib.Data;
+@inject HttpClient Http
+
+<h1>Messages</h1>
+@foreach(var msg in messages)
+{
+    <div class="card m-1 p-1">
+        <div class="card-header">
+            <h3>@msg.Sender</h3>
+        </div>
+        <div class="card-body">
+            <p>Height @msg.Height</p>
+            <p>Text @msg.Txt</p>
+            <p>Key @msg.PublicKey</p>
+            <p>Signature @msg.Signature</p>
+
+
+        </div>
+    </div>
+}
+<p>@err</p>
+@code {
+    List<MessageModel> messages = new List<MessageModel>();
+    string err="";
+    protected override async Task OnInitializedAsync()
+    {
+        //  Http.DefaultRequestHeaders.Clear();
+        //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
+        try
+        {
+            messages = await Http.GetFromJsonAsync<List<MessageModel>>("Message");
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    
+    }
+}

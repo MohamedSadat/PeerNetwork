@@ -35,9 +35,13 @@ namespace PeerLib.Services
                     {
                         var msg = new MessageModel();
                         msg.Sender = reader.ReadString();
+                        msg.PublicKey = reader.ReadString();
+
                         msg.Txt = reader.ReadString();
                         msg.Height = reader.ReadInt64();
                         msg.MsgHash = reader.ReadString();
+                        msg.Signature = reader.ReadString();
+
                         messages.Add(msg);
                     }
                 }
@@ -73,10 +77,18 @@ namespace PeerLib.Services
                     msg.Height = stream.Length;
                     //   writer.Seek(0, SeekOrigin.End);
                     writer.Write(msg.Sender);
+                    writer.Write(msg.PublicKey);
+
                     writer.Write(msg.Txt);
                     writer.Write(msg.Height);
                     msg.MsgHash = MsgHashService.HashAlgoStd(msg);
                     writer.Write(msg.MsgHash);
+
+
+                  //  MsgSign.Sign(msg);
+                    writer.Write(msg.Signature);
+
+
 
 
                 }
@@ -99,6 +111,18 @@ namespace PeerLib.Services
                 //Use http
              //   peer.Messages.Push(msg);
             }
+        }
+        public async Task<bool> ValidateMsg()
+        {
+            var msgs = GetMessages();
+            foreach (var msg in msgs)
+            {
+                if (!MsgHashService.ValidateMsg(msg))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

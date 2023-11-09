@@ -1,0 +1,57 @@
+﻿@page "/counter"
+@using PeerLib.Data;
+@using PeerLib.Services;
+@inject HttpClient Http
+
+<PageTitle>Add Message</PageTitle>
+<p>@err</p>
+
+<h1>Add Message</h1>
+<EditForm Model="msg" OnValidSubmit="PostMessage">
+<label class="form-label" for="Sender">Sender</label>
+    <InputText class="form-control" id="Sender" @bind-Value="msg.Sender" />
+<label class="form-label" for="Txt">Text</label>
+    <InputText class="form-control" id="Txt" @bind-Value="msg.Txt" />
+    <label class="form-label" for="PublicKey">PublicKey</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="msg.PublicKey" />
+    <label class="form-label" for="Signature">Signature</label>
+    <InputText class="form-control" id="Signature" @bind-Value="msg.Signature" disabled />
+    <label class="form-label" for="MsgHash">MsgHash</label>
+    <InputText class="form-control" id="MsgHash" @bind-Value="msg.MsgHash" disabled />
+<button class="m-1 p-1 btn btn-primary" type="submit"  >Post Message</button>
+
+</EditForm>
+
+@code {
+
+    MessageModel msg = new MessageModel();
+    TransactionModel trans = new TransactionModel();
+    string err = "";
+    private async Task PostMessage()
+    {
+        try
+        {
+            trans.Message = msg;
+            trans.PrivateKey = "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b";
+            msg.MsgHash = MsgHashService.HashAlgoStd(msg);
+            //     MsgSign.Sign(msg);
+            Http.DefaultRequestHeaders.Clear();
+            var r = await Http.PostAsJsonAsync("Message/Sign", msg);
+            if(r.IsSuccessStatusCode)
+            {
+                msg.Signature = await r.Content.ReadAsStringAsync();
+                await Http.PostAsJsonAsync("Message/AddMsg", msg);
+            }
+            else
+            {
+                err = "Error in Sign"; 
+            }
+            
+           // 
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    }
+}
