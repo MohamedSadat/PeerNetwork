@@ -1,5 +1,8 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using Blazored.Toast
+@using Blazored.Toast.Configuration;
+@using Blazored.Toast.Services;
+@inherits LayoutComponentBase
+@inject IToastService toast
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -15,3 +18,4 @@
         </article>
     </main>
 </div>
+<BlazoredToasts Timeout="4" Position="ToastPosition.BottomRight"></BlazoredToasts>

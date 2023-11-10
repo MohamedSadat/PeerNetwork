@@ -19,10 +19,8 @@ namespace PeerGateway
             builder.Services.AddCors(policy => policy.AddPolicy("open", opt => opt.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
             builder.Services.AddResponseCaching();
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddSingleton<AppModel>();
-            builder.Services.AddScoped<MsgService>();
-            builder.Services.AddScoped<NodeServices>();
-
+            builder.Services.AddBlockChainServices();
+          
             builder.Services.AddHealthChecks();
 
             var app = builder.Build();

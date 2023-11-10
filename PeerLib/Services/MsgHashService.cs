@@ -18,7 +18,10 @@ namespace PeerLib.Services
         {
             return HashAlgoStd(mag.Txt + mag.PublicKey+mag.Amount.ToString() + mag.Height.ToString());
         }
-        
+        public static string HashBlock(BlockModel block)
+        {
+            return HashAlgoStd($"{block.TimeStamp}{block.Height}" );
+        }
 
         public static string HashAlgoStd(string msg, int outputSize = 32)
         {

@@ -13,11 +13,13 @@ namespace PeerLib.Services
     {
         private readonly AppModel app;
         private readonly NodeServices inode;
+        private readonly MsgIndexService msgIndex;
 
-        public MsgService(AppModel app,NodeServices inode)
+        public MsgService(AppModel app,NodeServices inode, MsgIndexService msgIndex)
         {
             this.app = app;
             this.inode = inode;
+            this.msgIndex = msgIndex;
         }
         public Stack<MessageModel> GetMsgs()
         {
@@ -60,8 +62,6 @@ namespace PeerLib.Services
             long fileSizeInBytes = fileInfo.Length;
             return fileSizeInBytes;
          
-      
-
         }
 
         public async Task AddMsg(MessageModel msg)
@@ -98,8 +98,10 @@ namespace PeerLib.Services
 
                 }
             }
+            msgIndex.WriteIndex(msg);
       
         }
+ 
         public async Task PublishMsg(MessageModel msg)
         {
             //Call http service to send msg to peers

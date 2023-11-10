@@ -1,15 +1,20 @@
 ﻿@page "/"
+@using Blazored.Toast.Services;
 @using PeerLib.Data;
 @inject HttpClient Http
-
+@inject IToastService toast
 <h1>Messages</h1>
+<div class="row">
+
+
 @foreach(var msg in messages)
 {
+    <div class="col-md-6 col-xs-12">
     <div class="card m-1 p-1">
         <div class="card-header">
-            <h3>Node: @msg.NodePubKey</h3>
+            <h4>Node: @msg.NodePubKey</h4>
 
-            <h4>@msg.Sender : @msg.Receiver</h4>
+            <h5>@msg.Sender : @msg.Receiver</h5>
         </div>
         <div class="card-body">
             <p>Height @msg.Height</p>
@@ -21,7 +26,9 @@
 
         </div>
     </div>
+    </div>
 }
+</div>
 <p>@err</p>
 @code {
     List<MessageModel> messages = new List<MessageModel>();
@@ -33,6 +40,7 @@
         try
         {
             messages = await Http.GetFromJsonAsync<List<MessageModel>>("Message");
+           
         }
         catch (Exception ex)
         {
