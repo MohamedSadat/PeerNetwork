@@ -1,4 +1,4 @@
-﻿@page "/counter"
+﻿@page "/sendmessage"
 @using PeerLib.Data;
 @using PeerLib.Services;
 @inject HttpClient Http
@@ -8,12 +8,25 @@
 
 <h1>Add Message</h1>
 <EditForm Model="msg" OnValidSubmit="PostMessage">
-<label class="form-label" for="Sender">Sender</label>
-    <InputText class="form-control" id="Sender" @bind-Value="msg.Sender" />
-<label class="form-label" for="Txt">Text</label>
-    <InputText class="form-control" id="Txt" @bind-Value="msg.Txt" />
+    <DataAnnotationsValidator />
+<ValidationSummary />
     <label class="form-label" for="PublicKey">PublicKey</label>
     <InputText class="form-control" id="PublicKey" @bind-Value="msg.PublicKey" />
+<label class="form-label" for="Sender">Sender</label>
+    <InputText class="form-control" id="Sender" @bind-Value="msg.Sender" />
+    <label class="form-label" for="Receiver">Receiver</label>
+    <InputText class="form-control" id="Receiver" @bind-Value="msg.Receiver" />
+
+<label class="form-label" for="Txt">Text</label>
+    <InputText class="form-control" id="Txt" @bind-Value="msg.Txt" />
+     <label class="form-label" for="Amount">Amount</label>
+  @*   <InputNumber class="form-control" id="Amount" @bind-Value="msg.Amount" /> *@ 
+    <input class="form-control" type="number" @bind="msg.Amount" />
+    <label class="form-label" for="Fee">Fee</label>
+    <input class="form-control" type="number" @bind="msg.Fee" />
+
+
+
     <label class="form-label" for="Signature">Signature</label>
     <InputText class="form-control" id="Signature" @bind-Value="msg.Signature" disabled />
     <label class="form-label" for="MsgHash">MsgHash</label>
@@ -44,7 +57,7 @@
             }
             else
             {
-                err = "Error in Sign"; 
+                err = await r.Content.ReadAsStringAsync();
             }
             
            // 

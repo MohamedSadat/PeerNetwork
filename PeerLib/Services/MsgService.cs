@@ -34,10 +34,14 @@ namespace PeerLib.Services
                     while (reader.PeekChar() > -1)
                     {
                         var msg = new MessageModel();
+                        msg.NodePubKey = reader.ReadString();
                         msg.Sender = reader.ReadString();
+                        msg.Receiver = reader.ReadString();
                         msg.PublicKey = reader.ReadString();
 
                         msg.Txt = reader.ReadString();
+                        msg.Amount=reader.ReadUInt32();
+                        msg.Fee = reader.ReadUInt32();
                         msg.Height = reader.ReadInt64();
                         msg.MsgHash = reader.ReadString();
                         msg.Signature = reader.ReadString();
@@ -76,15 +80,16 @@ namespace PeerLib.Services
                 {
                     msg.Height = stream.Length;
                     //   writer.Seek(0, SeekOrigin.End);
+                    writer.Write(app.Node.PublicKey);
                     writer.Write(msg.Sender);
+                    writer.Write(msg.Receiver);
                     writer.Write(msg.PublicKey);
-
                     writer.Write(msg.Txt);
+                    writer.Write(msg.Amount);
+                    writer.Write(msg.Fee);
                     writer.Write(msg.Height);
                     msg.MsgHash = MsgHashService.HashAlgoStd(msg);
                     writer.Write(msg.MsgHash);
-
-
                   //  MsgSign.Sign(msg);
                     writer.Write(msg.Signature);
 

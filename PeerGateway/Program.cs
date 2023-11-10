@@ -35,13 +35,15 @@ namespace PeerGateway
                 //      myappdep.ContractPath = builder.Configuration.GetConnectionString("cn");
                 //    myappdep.ConLog = builder.Configuration.GetConnectionString("cnservice");
                 myappdep.Node.NodeAddress = builder.Configuration.GetValue<string>("NodeAddress");
+                myappdep.Node.PublicKey = builder.Configuration.GetValue<string>("PublicKey");
+
 
             }
 
             // Configure the HTTP request pipeline.
-        //    if (app.Environment.IsDevelopment())
-           // {
-                app.UseSwagger();
+            //    if (app.Environment.IsDevelopment())
+            // {
+            app.UseSwagger();
                 app.UseSwaggerUI();
           //  }
             app.UseCors("open");

@@ -75,13 +75,11 @@ namespace PeerGateway.Controllers
         }
         // POST api/<MessageController>
         [HttpPost("Sign")]
-        public async Task<ActionResult> Sign([FromBody] TransactionModel msg)
+        public async Task<ActionResult> Sign([FromBody] TransactionModel trans)
         {
             try
             {
-              //  await imsg.AddMsg(msg);
-                //   await imsg.PublishMsg(msg);
-              var r=  MsgSign.Sign(msg.Message,msg.PrivateKey);
+              var r=  MsgSign.Sign(trans.Message,trans.PrivateKey);
                 return Ok(r);
 
             }

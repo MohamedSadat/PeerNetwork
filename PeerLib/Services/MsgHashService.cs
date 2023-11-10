@@ -16,7 +16,7 @@ namespace PeerLib.Services
         }
         public static string HashAlgoStd(MessageModel mag)
         {
-            return HashAlgoStd(mag.Txt + mag.PublicKey + mag.Height.ToString());
+            return HashAlgoStd(mag.Txt + mag.PublicKey+mag.Amount.ToString() + mag.Height.ToString());
         }
         
 
