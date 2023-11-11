@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,6 +43,7 @@ namespace PeerLib.Services
         }
         public async Task AddNode(NodeModel node)
         {
+            CheckNodeFile();
             app.Node.Peers.Add(node);
             using (var stream = File.Open($"{app.DataPath}nodes.dat", FileMode.Append))
             {
@@ -55,6 +57,35 @@ namespace PeerLib.Services
                 }
             }
 
+        }
+        public async Task PublishNode(NodeModel node)
+        {
+            //Call http service to send msg to peers
+            foreach (var peer in app.Node.Peers)
+            {
+                using (var http = new HttpClient())
+                {
+                    http.BaseAddress = new Uri(peer.NodeAddress);
+                    var response = await http.PostAsJsonAsync("/api/Node/PublishNode", node);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("Node published");
+                    }
+                }
+
+
+                //Use http
+                //   peer.Messages.Push(msg);
+            }
+        }
+        public void CheckNodeFile()
+        {
+            if (File.Exists($"{app.DataPath}msg.dat") == false)
+            {
+                var f = File.Create($"{app.DataPath}msg.dat");
+                f.Close();
+
+            }
         }
     
     }

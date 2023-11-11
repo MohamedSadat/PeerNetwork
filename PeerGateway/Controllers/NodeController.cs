@@ -43,6 +43,20 @@ namespace PeerGateway.Controllers
             }
          
         }
+        [HttpPost("PublishNode")]
+        public async Task<ActionResult> PublishNode([FromBody] NodeModel node)
+        {
+            try
+            {
+                await inode.AddNode(node);
+                return Ok();
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
 }

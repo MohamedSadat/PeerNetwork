@@ -21,6 +21,26 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<MsgIndexService>();
             services.AddScoped<BlockService>();
             services.AddScoped<BlockIndexService>();
+            services.AddScoped<NodeServices>();
+            services.AddScoped<MsgSign>();
+            services.AddScoped<MsgHashService>();
+
+
+            return services;
+        }
+        public static IServiceCollection AddWalletServices(
+ this IServiceCollection services)
+        {
+            services.AddSingleton<AppModel>();
+            services.AddSingleton<WalletAppModel>();
+            services.AddScoped<MsgService>();
+            services.AddScoped<MsgIndexService>();
+            services.AddScoped<BlockService>();
+            services.AddScoped<BlockIndexService>();
+            services.AddScoped<NodeServices>();
+            services.AddScoped<MsgSign>();
+            services.AddScoped<MsgHashService>();
+
 
             return services;
         }

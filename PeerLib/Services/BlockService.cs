@@ -11,11 +11,13 @@ namespace PeerLib.Services
     {
         private readonly AppModel app;
         private readonly BlockIndexService blockIndex;
+        private readonly MsgHashService msgHash;
 
-        public BlockService(AppModel app,BlockIndexService blockIndex)
+        public BlockService(AppModel app,BlockIndexService blockIndex,MsgHashService msgHash)
         {
             this.app = app;
             this.blockIndex = blockIndex;
+            this.msgHash = msgHash;
         }
         public void AddBlock()
         {
@@ -41,7 +43,7 @@ namespace PeerLib.Services
                     //Append will add to the end of the file
                     using (var writer = new BinaryWriter(stream, Encoding.UTF8))
                     {
-                    block.BlockHash = MsgHashService.HashBlock(block);
+                    block.BlockHash = msgHash.HashBlock(block);
 
                     block.Height = stream.Length;
                         writer.Write(block.Height);

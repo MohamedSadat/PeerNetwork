@@ -1,0 +1,64 @@
+﻿@page "/setting"
+@using PeerLib.Data;
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IToastService toast
+@inject WalletAppModel wallet
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>Setting</h3>
+<EditForm Model="wallet" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label class="form-label" for="PublicKey">PrivateKey</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PrivateKey" />
+    
+    <label class="form-label" for="PublicKey">PublicKey</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PublicKey" />
+    <label class="form-label" for="NodeAddress">NodeAddress</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.NodeAddress" />
+
+    <button class="m-1 p-1 btn btn-primary" type="submit">Save</button>
+
+</EditForm>
+@code {
+       protected override async Task OnInitializedAsync()
+    {
+        if(await localStorage.ContainKeyAsync("firstrun"))
+        {
+            wallet.FirstRun=Convert.ToInt32(  await localStorage.GetItemAsStringAsync("firstrun"));
+            wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
+            wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
+            wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
+
+
+        }
+        else
+        {
+         await   localStorage.SetItemAsStringAsync("firstrun", "1");
+            await localStorage.SetItemAsStringAsync("privatekey", "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b");
+            await localStorage.SetItemAsStringAsync("publickey", "e0bc614e4fd035a488619799853b075143deea596c477b8dc077e309c0fe42e9");
+
+            await localStorage.SetItemAsStringAsync("NodeAddress", "https://kitchino.ddns.net:8085/api/");
+
+            wallet.FirstRun = Convert.ToInt32(await localStorage.GetItemAsStringAsync("firstrun"));
+            wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
+            wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
+            wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
+
+        }
+    }
+    async Task Save()
+    {
+        //pub
+        //e0bc614e4fd035a488619799853b075143deea596c477b8dc077e309c0fe42e9
+
+      //  6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+        await localStorage.SetItemAsStringAsync("privatekey", wallet.PrivateKey);
+        await localStorage.SetItemAsStringAsync("publickey", wallet.PublicKey);
+
+        await localStorage.SetItemAsStringAsync("NodeAddress", wallet.NodeAddress);
+
+    }
+
+}

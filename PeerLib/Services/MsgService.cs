@@ -14,12 +14,16 @@ namespace PeerLib.Services
         private readonly AppModel app;
         private readonly NodeServices inode;
         private readonly MsgIndexService msgIndex;
+        private readonly MsgHashService msgHash;
+        private readonly MsgSign sign;
 
-        public MsgService(AppModel app,NodeServices inode, MsgIndexService msgIndex)
+        public MsgService(AppModel app,NodeServices inode, MsgIndexService msgIndex,MsgHashService msgHash,MsgSign sign)
         {
             this.app = app;
             this.inode = inode;
             this.msgIndex = msgIndex;
+            this.msgHash = msgHash;
+            this.sign = sign;
         }
         public Stack<MessageModel> GetMsgs()
         {
@@ -47,6 +51,7 @@ namespace PeerLib.Services
                         msg.Height = reader.ReadInt64();
                         msg.MsgHash = reader.ReadString();
                         msg.Signature = reader.ReadString();
+                        msg.TimeStamp = reader.ReadInt64();
 
                         messages.Add(msg);
                     }
@@ -55,7 +60,7 @@ namespace PeerLib.Services
             return messages;
 
         }
-        public long GetMessagesHeighr()
+        public long GetMessagesHeight()
         {
             //get file size
             FileInfo fileInfo = new FileInfo($"{app.DataPath}msg.dat");
@@ -63,9 +68,18 @@ namespace PeerLib.Services
             return fileSizeInBytes;
          
         }
-
-        public async Task AddMsg(MessageModel msg)
+        public async Task AddMessages(List<MessageModel> lst)
         {
+            foreach(var msg in lst)
+            {
+                await AddMsg(msg);
+            }
+        }
+        
+        public async Task<ResultModel<MessageModel>> AddMsg(MessageModel msg)
+        {
+            var r=new ResultModel<MessageModel>(msg);
+            
             if(File.Exists($"{app.DataPath}msg.dat")==false)
             {
                var f= File.Create($"{app.DataPath}msg.dat");
@@ -88,17 +102,16 @@ namespace PeerLib.Services
                     writer.Write(msg.Amount);
                     writer.Write(msg.Fee);
                     writer.Write(msg.Height);
-                    msg.MsgHash = MsgHashService.HashAlgoStd(msg);
+                    msg.MsgHash = msgHash.HashAlgoStd(msg);
                     writer.Write(msg.MsgHash);
                   //  MsgSign.Sign(msg);
                     writer.Write(msg.Signature);
-
-
-
+                    writer.Write(msg.TimeStamp);
 
                 }
             }
             msgIndex.WriteIndex(msg);
+            return r;
       
         }
  
@@ -112,6 +125,15 @@ namespace PeerLib.Services
                 {
                     http.BaseAddress = new Uri(peer.NodeAddress);
                     var response = await http.PostAsJsonAsync("/api/Message/AddMsg", msg);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        
+                        app.Logs.Add($"{peer.NodeAddress} ,Message published");
+                    }
+                    else
+                    {
+                        app.Logs.Add($"{peer.NodeAddress} ,Message not published");
+                    }
                 }
 
 
@@ -124,7 +146,7 @@ namespace PeerLib.Services
             var msgs = GetMessages();
             foreach (var msg in msgs)
             {
-                if (!MsgHashService.ValidateMsg(msg))
+                if (!msgHash.ValidateMsg(msg))
                 {
                     return false;
                 }

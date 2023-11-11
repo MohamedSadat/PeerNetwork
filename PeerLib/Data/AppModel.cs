@@ -10,5 +10,6 @@ namespace PeerLib.Data
     {
         public string DataPath { get; set; } = "Server\\";
         public NodeModel Node { get; set; } = new NodeModel();
+        public List<string> Logs { get; set; } = new List<string>();
     }
 }

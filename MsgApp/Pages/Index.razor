@@ -3,6 +3,9 @@
 @using PeerLib.Data;
 @inject HttpClient Http
 @inject IToastService toast
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject WalletAppModel wallet
+@inject NavigationManager Nav
 <h1>Messages</h1>
 <div class="row">
 
@@ -21,7 +24,8 @@
             <p>Amount @msg.Amount</p>
             <p>Text @msg.Txt</p>
             <p>Key @msg.PublicKey</p>
-            <p>Signature @msg.Signature</p>
+                    <p>Time stamp @msg.TimeStamp</p>
+         @*    <p>Signature @msg.Signature</p> *@
 
 
         </div>
@@ -35,6 +39,23 @@
     string err="";
     protected override async Task OnInitializedAsync()
     {
+        if(await localStorage.ContainKeyAsync("firstrun"))
+        {
+            wallet.FirstRun=Convert.ToInt32(  await localStorage.GetItemAsStringAsync("firstrun"));
+            wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
+            wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
+
+
+        }
+        else
+        {
+
+         //   await   localStorage.SetItemAsStringAsync("firstrun", "1");
+         //   await localStorage.SetItemAsStringAsync("privatekey", "");
+          //  await localStorage.SetItemAsStringAsync("NodeAddress", "");
+            Nav.NavigateTo("/setting");
+
+        }
         //  Http.DefaultRequestHeaders.Clear();
         //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
         try

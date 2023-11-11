@@ -1,83 +1,94 @@
 ﻿@page "/sendmessage"
 @using PeerLib.Data;
 @using PeerLib.Services;
+@using System.Text.Json;
 @inject HttpClient Http
 @inject NavigationManager Nav
 @inject IToastService toast
+@inject MsgHashService msghash
+@inject WalletAppModel wallet
 <PageTitle>Add Message</PageTitle>
 <p>@err</p>
 
 <h1>Add Message</h1>
-<EditForm Model="msg" OnValidSubmit="PostMessage">
+<EditForm Model="trans.Message" OnValidSubmit="PostMessage">
     <DataAnnotationsValidator />
 <ValidationSummary />
     <label class="form-label" for="PublicKey">PublicKey</label>
-    <InputText class="form-control" id="PublicKey" @bind-Value="msg.PublicKey" />
+    <InputText class="form-control" id="PublicKey" @bind-Value="trans.Message.PublicKey" />
 <label class="form-label" for="Sender">Sender</label>
-    <InputText class="form-control" id="Sender" @bind-Value="msg.Sender" />
+    <InputText class="form-control" id="Sender" @bind-Value="trans.Message.Sender" />
     <label class="form-label" for="Receiver">Receiver</label>
-    <InputText class="form-control" id="Receiver" @bind-Value="msg.Receiver" />
+    <InputText class="form-control" id="Receiver" @bind-Value="trans.Message.Receiver" />
 
 <label class="form-label" for="Txt">Text</label>
-    <InputText class="form-control" id="Txt" @bind-Value="msg.Txt" />
+    <InputText class="form-control" id="Txt" @bind-Value="trans.Message.Txt" />
      <label class="form-label" for="Amount">Amount</label>
   @*   <InputNumber class="form-control" id="Amount" @bind-Value="msg.Amount" /> *@ 
-    <input class="form-control" type="number" @bind="msg.Amount" />
+    <input class="form-control" type="number" @bind="trans.Message.Amount" />
     <label class="form-label" for="Fee">Fee</label>
-    <input class="form-control" type="number" @bind="msg.Fee" />
+    <input class="form-control" type="number" @bind="trans.Message.Fee" />
 
-
-
-    <label class="form-label" for="Signature">Signature</label>
-    <InputText class="form-control" id="Signature" @bind-Value="msg.Signature" disabled />
     <label class="form-label" for="MsgHash">MsgHash</label>
-    <InputText class="form-control" id="MsgHash" @bind-Value="msg.MsgHash" disabled />
+    <InputText class="form-control" id="MsgHash" @bind-Value="trans.Message.MsgHash" disabled />
+
 <button class="m-1 p-1 btn btn-primary" type="submit"  >Post Message</button>
 
 </EditForm>
 
 @code {
 
-    MessageModel msg = new MessageModel();
+
     TransactionModel trans = new TransactionModel();
     string err = "";
     private async Task PostMessage()
     {
         try
         {
-            trans.Message = msg;
-            trans.PrivateKey = "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b";
-            msg.MsgHash = MsgHashService.HashAlgoStd(msg);
-            //     MsgSign.Sign(msg);
-            Http.DefaultRequestHeaders.Clear();
-            var r = await Http.PostAsJsonAsync("Message/Sign", msg);
-            if(r.IsSuccessStatusCode)
+            if (await Sign() == true)
             {
-                msg.Signature = await r.Content.ReadAsStringAsync();
-                var rpost= await Http.PostAsJsonAsync("Message/AddMsg", msg);
-                if(rpost.IsSuccessStatusCode)
+                Http.DefaultRequestHeaders.Clear();
+
+
+                var rpost = await Http.PostAsJsonAsync("Message/AddMsg", trans);
+                if (rpost.IsSuccessStatusCode)
                 {
                     toast.ShowSuccess("Message Posted");
-                    msg = new MessageModel();
+                    trans.Message = new MessageModel();
                 }
                 else
                 {
                     err = await rpost.Content.ReadAsStringAsync();
                     toast.ShowError(err);
-                    msg=new MessageModel();
+                    //   msg=new MessageModel();
                 }
-               
             }
-            else
-            {
-                err = await r.Content.ReadAsStringAsync();
-            }
-            
-           // 
+
         }
         catch (Exception ex)
         {
             err = ex.Message;
+        }
+    }
+    async Task<bool> Sign()
+    {
+        trans.PrivateKey =wallet.PrivateKey;// "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b";
+        trans.Message.PublicKey = wallet.PublicKey;
+        trans.Message.MsgHash = msghash.HashAlgoStd(trans.Message);
+        var r = await Http.PostAsJsonAsync("Digital/Sign", trans);
+        if (r.IsSuccessStatusCode)
+        {
+            var resmodel = await r.Content.ReadFromJsonAsync<TransactionModel>();
+            // var resmodel = JsonSerializer.Deserialize<TransactionModel>(resstring);
+            trans.PublicKeyXML = resmodel.PublicKeyXML;
+            trans.Message.Signature= resmodel.Message.Signature;
+            return true;
+        }
+        else
+        {
+            err = await r.Content.ReadAsStringAsync();
+            toast.ShowError(err);
+            return false;
         }
     }
 }

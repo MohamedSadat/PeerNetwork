@@ -10,32 +10,36 @@ namespace PeerLib.Services
 {
     public class MsgSign
     {
-        public static string Sign(MessageModel msg, string _privateKey)
+        public  string Sign(TransactionModel trans)
         {
             //1 = 6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
             //
+            var pubkey = trans.Message.PublicKey;
+            var _privateKey = trans.PrivateKey;
             RSACryptoServiceProvider rsa = new();
             _privateKey = rsa.ToXmlString(false);
-            msg.PublicKey = rsa.ToXmlString(true);
+         pubkey = rsa.ToXmlString(true);
+            trans.PublicKeyXML=pubkey;
             rsa.FromXmlString(_privateKey);
-            byte[] dataToEncrypt = Encoding.ASCII.GetBytes(msg.MsgHash);
+            byte[] dataToEncrypt = Encoding.ASCII.GetBytes(trans.Message.MsgHash);
             byte[] encryptedByteArray = rsa.Encrypt(dataToEncrypt, false).ToArray();
             var r = Convert.ToBase64String(encryptedByteArray);
-            msg.Signature = r;
+            trans.Message.Signature = r;
             return r;
 
         }
-        public static bool Validate(MessageModel msg)
+        public  bool Validate(TransactionModel trans)
         {
             try
             {
                 RSACryptoServiceProvider rsa = new();
-                rsa.FromXmlString(msg.PublicKey);
 
-                byte[] dataByte = Convert.FromBase64String(msg.Signature);
+                rsa.FromXmlString(trans.PublicKeyXML);
+
+                byte[] dataByte = Convert.FromBase64String(trans.Message.Signature);
                 byte[] decryptedByte = rsa.Decrypt(dataByte, false);
                 var r = Encoding.UTF8.GetString(decryptedByte);
-                if (r == msg.MsgHash)
+                if (r == trans.Message.MsgHash)
                 {
 
                     return true;

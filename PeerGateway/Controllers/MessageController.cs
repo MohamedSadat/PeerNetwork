@@ -11,10 +11,14 @@ namespace PeerGateway.Controllers
     public class MessageController : ControllerBase
     {
         private readonly MsgService imsg;
+        private readonly MsgSign sign;
+        private readonly MsgHashService msgHash;
 
-        public MessageController(MsgService imsg)
+        public MessageController(MsgService imsg,MsgSign sign,MsgHashService msgHash)
         {
             this.imsg = imsg;
+            this.sign = sign;
+            this.msgHash = msgHash;
         }
         // GET: api/<MessageController>
         [HttpGet]
@@ -25,7 +29,7 @@ namespace PeerGateway.Controllers
         [HttpGet("MsgHeight")]
         public ActionResult GetMsgHeight()
         {
-            return Ok(imsg.GetMessagesHeighr());
+            return Ok(imsg.GetMessagesHeight());
         }
         [HttpGet("Validate")]
         public ActionResult GetValidate()
@@ -35,17 +39,17 @@ namespace PeerGateway.Controllers
 
         // POST api/<MessageController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MessageModel msg)
+        public async Task<ActionResult> Post([FromBody] TransactionModel  trans)
         {
             try
             {
-                if (MsgSign.Validate(msg) == false)
+                if (sign.Validate(trans) == false)
                 {
                     return BadRequest("Invalid Signature");
                 }
 
-                await imsg.AddMsg(msg);
-                await imsg.PublishMsg(msg);
+                await imsg.AddMsg(trans.Message);
+                await imsg.PublishMsg(trans.Message);
 
                 return Ok();
 
@@ -58,11 +62,20 @@ namespace PeerGateway.Controllers
 
         // POST api/<MessageController>
         [HttpPost("AddMsg")]
-        public async Task<ActionResult> AddMsg([FromBody] MessageModel msg)
+        public async Task<ActionResult> AddMsg([FromBody] TransactionModel trans)
         {
             try
             {
-                await imsg.AddMsg(msg);
+                if (sign.Validate(trans) == false)
+                {
+                    return BadRequest("Invalid Signature");
+                }
+
+              var r=  await imsg.AddMsg(trans.Message);
+                if(r.IsError)
+                {
+                    return BadRequest(r.Error);
+                }
              //   await imsg.PublishMsg(msg);
 
                 return Ok();
@@ -73,20 +86,7 @@ namespace PeerGateway.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        // POST api/<MessageController>
-        [HttpPost("Sign")]
-        public async Task<ActionResult> Sign([FromBody] TransactionModel trans)
-        {
-            try
-            {
-              var r=  MsgSign.Sign(trans.Message,trans.PrivateKey);
-                return Ok(r);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+      
+       
     }
 }

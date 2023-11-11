@@ -10,20 +10,24 @@ namespace PeerLib.Services
 {
     public class MsgHashService
     {
-        public static bool ValidateMsg(MessageModel msg)
+        public MsgHashService()
+        {
+            
+        }
+        public  bool ValidateMsg(MessageModel msg)
         {
             return msg.MsgHash == HashAlgoStd(msg);
         }
-        public static string HashAlgoStd(MessageModel mag)
+        public  string HashAlgoStd(MessageModel mag)
         {
             return HashAlgoStd(mag.Txt + mag.PublicKey+mag.Amount.ToString() + mag.Height.ToString());
         }
-        public static string HashBlock(BlockModel block)
+        public  string HashBlock(BlockModel block)
         {
             return HashAlgoStd($"{block.TimeStamp}{block.Height}" );
         }
 
-        public static string HashAlgoStd(string msg, int outputSize = 32)
+        public  string HashAlgoStd(string msg, int outputSize = 32)
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
