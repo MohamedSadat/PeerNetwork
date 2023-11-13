@@ -25,41 +25,7 @@ namespace PeerLib.Services
             this.msgHash = msgHash;
             this.sign = sign;
         }
-        public Stack<MessageModel> GetMsgs()
-        {
-            return app.Node.Messages;
-        }
-        public List<MessageModel> GetMessages()
-        {
-            var messages = new List<MessageModel>();
-            using (var stream = File.Open($"{app.DataPath}msg.dat", FileMode.Open))
-            {
-          //      Console.WriteLine("Size is {0}", stream.Length);
-                using (var reader = new BinaryReader(stream, Encoding.UTF8))
-                {
-                    while (reader.PeekChar() > -1)
-                    {
-                        var msg = new MessageModel();
-                        msg.NodePubKey = reader.ReadString();
-                        msg.Sender = reader.ReadString();
-                        msg.Receiver = reader.ReadString();
-                        msg.PublicKey = reader.ReadString();
-
-                        msg.Txt = reader.ReadString();
-                        msg.Amount=reader.ReadUInt32();
-                        msg.Fee = reader.ReadUInt32();
-                        msg.Height = reader.ReadInt64();
-                        msg.MsgHash = reader.ReadString();
-                        msg.Signature = reader.ReadString();
-                        msg.TimeStamp = reader.ReadInt64();
-
-                        messages.Add(msg);
-                    }
-                }
-            }
-            return messages;
-
-        }
+    
         public long GetMessagesHeight()
         {
             //get file size
@@ -143,14 +109,14 @@ namespace PeerLib.Services
         }
         public async Task<bool> ValidateMsg()
         {
-            var msgs = GetMessages();
-            foreach (var msg in msgs)
-            {
-                if (!msgHash.ValidateMsg(msg))
-                {
-                    return false;
-                }
-            }
+            //var msgs = GetMessages();
+            //foreach (var msg in msgs)
+            //{
+            //    if (!msgHash.ValidateMsg(msg))
+            //    {
+            //        return false;
+            //    }
+            //}
             return true;
         }
     }

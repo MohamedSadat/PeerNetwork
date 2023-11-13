@@ -13,18 +13,32 @@ namespace PeerGateway.Controllers
         private readonly MsgService imsg;
         private readonly MsgSign sign;
         private readonly MsgHashService msgHash;
+        private readonly MsgQueryService msgQuery;
+        private readonly MsgIndexService indexService;
 
-        public MessageController(MsgService imsg,MsgSign sign,MsgHashService msgHash)
+        public MessageController(MsgService imsg,MsgSign sign,MsgHashService msgHash,MsgQueryService msgQuery,MsgIndexService indexService)
         {
             this.imsg = imsg;
             this.sign = sign;
             this.msgHash = msgHash;
+            this.msgQuery = msgQuery;
+            this.indexService = indexService;
         }
         // GET: api/<MessageController>
         [HttpGet]
         public IEnumerable<MessageModel> Get()
         {
-            return imsg.GetMessages();
+            return msgQuery.GetMessages();
+        }
+        [HttpGet("MyMessage/{key}")]
+        public IEnumerable<MessageModel> GetMyMessage(string key)
+        {
+            return msgQuery.GetMessagesByAddress(key);
+        }
+        [HttpGet("GetIndexes")]
+        public IEnumerable<MsgIndexModel> GetIndexes()
+        {
+            return indexService.GetIndexes();
         }
         [HttpGet("MsgHeight")]
         public ActionResult GetMsgHeight()

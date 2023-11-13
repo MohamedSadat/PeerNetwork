@@ -1,0 +1,50 @@
+﻿@page "/msgindex"
+@using Blazored.Toast.Services;
+@using PeerLib.Data;
+@inject HttpClient Http
+@inject IToastService toast
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject WalletAppModel wallet
+@inject NavigationManager Nav
+<h1>Msg Index</h1>
+<div class="row">
+
+
+@foreach(var msg in msgindexes)
+{
+    <div class="col-md-6 col-xs-12">
+    <div class="card m-1 p-1">
+        <div class="card-header">
+            <h4>Height: @msg.Height</h4>
+
+        </div>
+        <div class="card-body">
+            <p>Sender @msg.Sender</p>
+            <p>Receiver @msg.Receiver</p>
+
+        </div>
+    </div>
+    </div>
+}
+</div>
+<p>@err</p>
+@code {
+    List<MsgIndexModel> msgindexes = new List<MsgIndexModel>();
+    string err="";
+    protected override async Task OnInitializedAsync()
+    {
+
+        //  Http.DefaultRequestHeaders.Clear();
+        //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
+        try
+        {
+            msgindexes = await Http.GetFromJsonAsync<List<MsgIndexModel>>("message/GetIndexes");
+           
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+    
+    }
+}

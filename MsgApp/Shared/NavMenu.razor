@@ -1,4 +1,5 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject AppModel app
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">MsgApp</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -15,13 +16,28 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="mymessages">
+                <span class="oi oi-box" aria-hidden="true"></span> My Messages
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="msgindex">
+                <span class="oi oi-box" aria-hidden="true"></span> Get Index
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="sendmessage">
                 <span class="oi oi-plus" aria-hidden="true"></span> Send Message
             </NavLink>
         </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="createkey">
+                <span class="oi oi-dollar" aria-hidden="true"></span> Key Generator
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="setting">
-                <span class="oi oi-plus" aria-hidden="true"></span> Setting
+                <span class="oi oi-cog" aria-hidden="true"></span> Setting
             </NavLink>
         </div>
     </nav>

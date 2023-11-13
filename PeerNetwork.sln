@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PeerGateway", "PeerGateway\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsgApp", "MsgApp\MsgApp.csproj", "{1BD1FD1C-CEB9-40FB-8A0C-1AC21AB5B513}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeApp", "NodeApp\NodeApp.csproj", "{611AEDAC-1767-48EB-880C-B2B23CBFFFD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NodeApp", "NodeApp\NodeApp.csproj", "{611AEDAC-1767-48EB-880C-B2B23CBFFFD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

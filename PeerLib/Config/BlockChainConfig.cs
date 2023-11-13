@@ -18,6 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton<AppModel>();
             services.AddScoped<MsgService>();
+            services.AddScoped<MsgQueryService>();
+
             services.AddScoped<MsgIndexService>();
             services.AddScoped<BlockService>();
             services.AddScoped<BlockIndexService>();
@@ -40,8 +42,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<NodeServices>();
             services.AddScoped<MsgSign>();
             services.AddScoped<MsgHashService>();
+            services.AddScoped<KeyGeneratorService>();
 
-
+            
             return services;
         }
     }

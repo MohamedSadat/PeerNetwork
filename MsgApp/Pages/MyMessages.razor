@@ -1,0 +1,63 @@
+﻿@page "/mymessages"
+
+@using Blazored.Toast.Services;
+@using PeerLib.Data;
+@inject HttpClient Http
+@inject IToastService toast
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject WalletAppModel wallet
+@inject NavigationManager Nav
+@inject WalletAppModel wallet
+<h1>MY Messages</h1>
+<div class="row">
+
+
+    @foreach (var msg in messages)
+    {
+        <div class="col-md-6 col-xs-12">
+            <div class="card m-1 p-1">
+                <div class="card-header">
+                    <h5>Node: @msg.NodePubKey</h5>
+                    <h6>Sender: @msg.Sender </h6>
+                    <h6>Receiver: @msg.Receiver</h6>
+
+                </div>
+                <div class="card-body">
+                    <p>Height @msg.Height</p>
+                    <p>Amount @msg.Amount</p>
+                    <p>Text @msg.Txt</p>
+                    <p>Time stamp @msg.TimeStamp</p>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<p>@err</p>
+@code {
+
+    [Parameter]
+    public string? PublicKey { get; set; }
+
+    List<MessageModel> messages = new List<MessageModel>();
+    string err = "";
+    protected override async Task OnInitializedAsync()
+    {
+        if(PublicKey is null)
+        {
+            PublicKey = wallet.PublicKey;   
+        }
+    //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
+        try
+        {
+            messages = await Http.GetFromJsonAsync<List<MessageModel>>($"Message/MyMessage/{wallet.PublicKey}");
+
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
+
+    }
+
+}

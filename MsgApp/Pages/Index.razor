@@ -15,19 +15,17 @@
     <div class="col-md-6 col-xs-12">
     <div class="card m-1 p-1">
         <div class="card-header">
-            <h4>Node: @msg.NodePubKey</h4>
+            <h5>Node: @msg.NodePubKey</h5>
+            <h6>Sender: @msg.Sender </h6>
+             <h6>Receiver: @msg.Receiver</h6>
 
-            <h5>@msg.Sender : @msg.Receiver</h5>
         </div>
         <div class="card-body">
             <p>Height @msg.Height</p>
             <p>Amount @msg.Amount</p>
             <p>Text @msg.Txt</p>
-            <p>Key @msg.PublicKey</p>
                     <p>Time stamp @msg.TimeStamp</p>
-         @*    <p>Signature @msg.Signature</p> *@
-
-
+         
         </div>
     </div>
     </div>
@@ -44,6 +42,7 @@
             wallet.FirstRun=Convert.ToInt32(  await localStorage.GetItemAsStringAsync("firstrun"));
             wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
             wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
+            wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
 
 
         }

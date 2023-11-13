@@ -1,0 +1,39 @@
+﻿@page "/createkey"
+@using PeerLib.Services;
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IToastService toast
+@inject WalletAppModel wallet
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject MsgHashService msgHashService
+@inject KeyGeneratorService keyGeneratorService
+<h3>Create Key</h3>
+<EditForm Model="wallet" OnValidSubmit="Generate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label class="form-label" for="PublicKey">PrivateKey</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PrivateKey" />
+
+    <label class="form-label" for="PublicKey">PublicKey</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PublicKey" />
+    
+    <button class="m-1 p-1 btn btn-primary" type="submit">Generate</button>
+
+</EditForm>
+@code {
+    async Task Generate()
+    {
+        var key =  keyGeneratorService.GeneratePrivateKey();
+        wallet.PrivateKey = msgHashService.HashAlgoStd(key);
+        wallet.PublicKey = msgHashService.HashAlgoStd(wallet.PrivateKey);
+        //pub
+        //e0bc614e4fd035a488619799853b075143deea596c477b8dc077e309c0fe42e9
+
+        //  6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+        await localStorage.SetItemAsStringAsync("privatekey", wallet.PrivateKey);
+        await localStorage.SetItemAsStringAsync("publickey", wallet.PublicKey);
+
+      //  await localStorage.SetItemAsStringAsync("NodeAddress", wallet.NodeAddress);
+
+    }
+}
