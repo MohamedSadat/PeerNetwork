@@ -9,10 +9,10 @@ namespace PeerLib.Services
 {
     public class MsgQueryService
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
         private readonly MsgIndexService msgIndex;
 
-        public MsgQueryService(AppModel app, MsgIndexService msgIndex)
+        public MsgQueryService(BlovkChainAppModel app, MsgIndexService msgIndex)
         {
             this.app = app;
             this.msgIndex = msgIndex;

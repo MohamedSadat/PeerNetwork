@@ -6,34 +6,33 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject WalletAppModel wallet
 @inject NavigationManager Nav
-<h1>Messages</h1>
-<div class="row">
 
-
-@foreach(var msg in messages)
-{
-    <div class="col-md-6 col-xs-12">
-    <div class="card m-1 p-1">
-        <div class="card-header">
-            <h5>Node: @msg.NodePubKey</h5>
-            <h6>Sender: @msg.Sender </h6>
-             <h6>Receiver: @msg.Receiver</h6>
-
-        </div>
-        <div class="card-body">
-            <p>Height @msg.Height</p>
-            <p>Amount @msg.Amount</p>
-            <p>Text @msg.Txt</p>
-                    <p>Time stamp @msg.TimeStamp</p>
-         
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+           <p class="h6">Total Balance</p>
+            <p class="h4">@Balance</p>
+            <br />
+            <br />
+            <br />
+            <br />
         </div>
     </div>
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary">Deposit</button>
+        </div>
+        <div class="col text-center">
+            <button class="btn btn-primary">Withdraw</button>
+        </div>
     </div>
-}
+   
+
 </div>
+
 <p>@err</p>
 @code {
-    List<MessageModel> messages = new List<MessageModel>();
+    long Balance = 0;
     string err="";
     protected override async Task OnInitializedAsync()
     {
@@ -43,6 +42,9 @@
             wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
             wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
             wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
+wallet.PublicKeyXML = await localStorage.GetItemAsStringAsync("PublicKeyXML");
+            wallet.PrivateKeyXml = await localStorage.GetItemAsStringAsync("PrivateKeyXml");
+
 
 
         }
@@ -59,7 +61,8 @@
         //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
         try
         {
-            messages = await Http.GetFromJsonAsync<List<MessageModel>>("Message");
+            if(string.IsNullOrWhiteSpace(wallet.PublicKey)==false)
+            Balance = await Http.GetFromJsonAsync<long>($"Balance/GetBalance/{wallet.PublicKey}");
            
         }
         catch (Exception ex)

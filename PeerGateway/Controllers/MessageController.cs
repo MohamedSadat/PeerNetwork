@@ -80,7 +80,7 @@ namespace PeerGateway.Controllers
         {
             try
             {
-                if (sign.Validate(trans) == false)
+                if (sign.ValidateEx(trans) == false)
                 {
                     return BadRequest("Invalid Signature");
                 }

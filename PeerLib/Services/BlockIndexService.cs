@@ -10,10 +10,10 @@ namespace PeerLib.Services
 {
     public class BlockIndexService
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
     
 
-        public BlockIndexService(AppModel app)
+        public BlockIndexService(BlovkChainAppModel app)
         {
             this.app = app;
          

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PeerLib.Data
 {
-    public class AppModel
+    public class BlovkChainAppModel
     {
         public string DataPath { get; set; } = "Server\\";
         public NodeModel Node { get; set; } = new NodeModel();

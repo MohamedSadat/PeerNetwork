@@ -10,10 +10,10 @@ namespace PeerGateway.Controllers
     [ApiController]
     public class NodeController : ControllerBase
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
         private readonly NodeServices inode;
 
-        public NodeController(AppModel app,NodeServices inode)
+        public NodeController(BlovkChainAppModel app,NodeServices inode)
         {
             this.app = app;
             this.inode = inode;

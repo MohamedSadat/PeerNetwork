@@ -28,14 +28,19 @@ namespace PeerGateway
             {
                 var services = serviceScope.ServiceProvider;
 
-                var myappdep = services.GetRequiredService<AppModel>();
+                var myappdep = services.GetRequiredService<BlovkChainAppModel>();
 
                 //      myappdep.ContractPath = builder.Configuration.GetConnectionString("cn");
                 //    myappdep.ConLog = builder.Configuration.GetConnectionString("cnservice");
                 myappdep.Node.NodeAddress = builder.Configuration.GetValue<string>("NodeAddress");
                 myappdep.Node.PublicKey = builder.Configuration.GetValue<string>("PublicKey");
 
+                using (var bScope = app.Services.CreateScope())
+                {
+                var bchain = services.GetRequiredService<BlockChainService>();
+                    bchain.Initialize();
 
+                }
             }
 
             // Configure the HTTP request pipeline.

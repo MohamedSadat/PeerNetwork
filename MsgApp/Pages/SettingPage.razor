@@ -5,46 +5,67 @@
 @inject IToastService toast
 @inject WalletAppModel wallet
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
+@inject IToastService toast
 <h3>Setting</h3>
 <EditForm Model="wallet" OnValidSubmit="Save">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <label class="form-label" for="PublicKey">PrivateKey</label>
+    <label class="form-label" for="PublicKey">Private Key</label>
     <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PrivateKey" />
-    
-    <label class="form-label" for="PublicKey">PublicKey</label>
+    <label class="form-label" for="PublicKey">PrivateKeyXml</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PrivateKeyXml" />
+    <label class="form-label" for="PublicKey">Public Key</label>
     <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PublicKey" />
-    <label class="form-label" for="NodeAddress">NodeAddress</label>
-    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.NodeAddress" />
+    <label class="form-label" for="PublicKey">Public PublicKeyXML</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.PublicKeyXML" />
 
+
+    <label class="form-label" for="NodeAddress">Node Address</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.NodeAddress" />
+    <label class="form-label" for="WalletName">Wallet Name</label>
+    <InputText class="form-control" id="PublicKey" @bind-Value="wallet.WalletName" />
     <button class="m-1 p-1 btn btn-primary" type="submit">Save</button>
+   
+
 
 </EditForm>
+
+<button class="m-1 p-1 btn btn-primary" @onclick="GenPubXml">Save XML Key</button>
 @code {
-       protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         if(await localStorage.ContainKeyAsync("firstrun"))
         {
             wallet.FirstRun=Convert.ToInt32(  await localStorage.GetItemAsStringAsync("firstrun"));
             wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
+            wallet.PrivateKeyXml = await localStorage.GetItemAsStringAsync("PrivateKeyXml");
+
             wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
             wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
+            wallet.PublicKeyXML = await localStorage.GetItemAsStringAsync("PublicKeyXML");
 
 
         }
         else
         {
-         await   localStorage.SetItemAsStringAsync("firstrun", "1");
+            await   localStorage.SetItemAsStringAsync("firstrun", "1");
             await localStorage.SetItemAsStringAsync("privatekey", "");
             await localStorage.SetItemAsStringAsync("publickey", "");
+            await localStorage.SetItemAsStringAsync("PublicKeyXML", "");
+            await localStorage.SetItemAsStringAsync("WalletName", "Msg Wallet");
+
 
             await localStorage.SetItemAsStringAsync("NodeAddress", "https://kitchinocloud.ddns.net:8085/api/");
 
             wallet.FirstRun = Convert.ToInt32(await localStorage.GetItemAsStringAsync("firstrun"));
             wallet.PrivateKey = await localStorage.GetItemAsStringAsync("privatekey");
+            wallet.PrivateKeyXml = await localStorage.GetItemAsStringAsync("PrivateKeyXml");
+
             wallet.NodeAddress = await localStorage.GetItemAsStringAsync("NodeAddress");
             wallet.PublicKey = await localStorage.GetItemAsStringAsync("publickey");
+            wallet.PublicKeyXML = await localStorage.GetItemAsStringAsync("PublicKeyXML");
+
+            wallet.WalletName = await localStorage.GetItemAsStringAsync("WalletName");
 
         }
     }
@@ -53,11 +74,36 @@
         //pub
         //e0bc614e4fd035a488619799853b075143deea596c477b8dc077e309c0fe42e9
 
-      //  6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+        //  6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
         await localStorage.SetItemAsStringAsync("privatekey", wallet.PrivateKey);
+        await localStorage.SetItemAsStringAsync("PrivateKeyXml", wallet.PrivateKeyXml);
+
         await localStorage.SetItemAsStringAsync("publickey", wallet.PublicKey);
 
+        await localStorage.SetItemAsStringAsync("PublicKeyXML", wallet.PublicKeyXML);
+
         await localStorage.SetItemAsStringAsync("NodeAddress", wallet.NodeAddress);
+        await localStorage.SetItemAsStringAsync("WalletName", wallet.WalletName);
+        toast.ShowSuccess("Saved");
+    }
+    async Task GenPubXml()
+    {
+        var rpost = await Http.PostAsJsonAsync("Digital/GeneratePubKeyXml", wallet);
+        if (rpost.IsSuccessStatusCode)
+        {
+            var resmodel = await rpost.Content.ReadFromJsonAsync<WalletAppModel>();
+            wallet.PublicKeyXML = resmodel.PublicKeyXML;
+            wallet.PrivateKeyXml = resmodel.PrivateKeyXml;
+            await localStorage.SetItemAsStringAsync("PublicKeyXML", wallet.PublicKeyXML);
+            await localStorage.SetItemAsStringAsync("PrivateKeyXml", wallet.PrivateKeyXml);
+            toast.ShowSuccess("Saved");
+        }
+        else
+        {
+            var err = await rpost.Content.ReadAsStringAsync();
+            toast.ShowError(err);
+        }
+
 
     }
 

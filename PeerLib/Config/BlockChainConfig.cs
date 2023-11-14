@@ -16,7 +16,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddBlockChainServices(
         this IServiceCollection services)
         {
-            services.AddSingleton<AppModel>();
+            services.AddSingleton<BlovkChainAppModel>();
+            services.AddSingleton<BlockChainService>();
+
+            
             services.AddScoped<MsgService>();
             services.AddScoped<MsgQueryService>();
 
@@ -26,6 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<NodeServices>();
             services.AddScoped<MsgSign>();
             services.AddScoped<MsgHashService>();
+            services.AddScoped<BalanceService>();
 
 
             return services;
@@ -33,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddWalletServices(
  this IServiceCollection services)
         {
-            services.AddSingleton<AppModel>();
+            services.AddSingleton<BlovkChainAppModel>();
             services.AddSingleton<WalletAppModel>();
             services.AddScoped<MsgService>();
             services.AddScoped<MsgIndexService>();

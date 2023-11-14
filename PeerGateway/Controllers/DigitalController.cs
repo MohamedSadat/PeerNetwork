@@ -33,7 +33,7 @@ namespace PeerGateway.Controllers
             {
 
              //   MsgHashService.HashAlgoStd(trans.Message);
-              var r=  sign.Sign(trans);
+              var r=  sign.SignEx(trans);
                 trans.Message.Signature = r;
                 return Ok(trans);
 
@@ -49,6 +49,48 @@ namespace PeerGateway.Controllers
             try
             {
                 var r= msgHash.HashAlgoStd(trans.Message);
+                return Ok(r);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("GeneratePubKeyXml")]
+        public async Task<ActionResult> GeneratePubKeyXml([FromBody] WalletAppModel wallet)
+        {
+            try
+            {
+                var r = sign.GeneratePublicKeyXML(wallet);
+                return Ok(wallet);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("EncryptMsg")]
+        public async Task<ActionResult> EncryptMsg([FromBody] TransactionModel trans)
+        {
+            try
+            {
+                var r = sign.SignTextMsg(trans);
+                return Ok(r);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("DecryptMsg")]
+        public async Task<ActionResult> DecryptMsg([FromBody] TransactionModel trans)
+        {
+            try
+            {
+                var r = sign.DescryptTextMsg(trans);
                 return Ok(r);
 
             }

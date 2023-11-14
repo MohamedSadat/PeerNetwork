@@ -21,7 +21,7 @@ namespace PeerLib.Data
         public uint Fee { get; set; } = 0;
         //size 65
         public string MsgHash { get; set; } = "";
-        public string PublicKey { get; set; } = "e0bc614e4fd035a488619799853b075143deea596c477b8dc077e309c0fe42e9";
+        public string PublicKey { get; set; } = "";
         
         public string Signature { get; set; } = "";
         public long TimeStamp { get; set; } = DateTime.Now.Ticks;

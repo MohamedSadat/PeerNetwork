@@ -2,6 +2,8 @@
 @using PeerLib.Data;
 @using PeerLib.Services;
 @using System.Text.Json;
+@using System.Security.Cryptography;
+@using System.Text;
 @inject HttpClient Http
 @inject NavigationManager Nav
 @inject IToastService toast
@@ -14,8 +16,6 @@
 <EditForm Model="trans.Message" OnValidSubmit="PostMessage">
     <DataAnnotationsValidator />
 <ValidationSummary />
-    <label class="form-label" for="PublicKey">PublicKey</label>
-    <InputText class="form-control" id="PublicKey" @bind-Value="trans.Message.PublicKey" />
 <label class="form-label" for="Sender">Sender</label>
     <InputText class="form-control" id="Sender" @bind-Value="trans.Message.Sender" />
     <label class="form-label" for="Receiver">Receiver</label>
@@ -41,10 +41,23 @@
 
     TransactionModel trans = new TransactionModel();
     string err = "";
+    protected override async Task OnInitializedAsync()
+    {
+        trans.PublicKeyXML = wallet.PublicKeyXML;
+        trans.PrivateKeyXml = wallet.PrivateKeyXml;
+        trans.Message.Sender = wallet.PublicKey;
+        trans.Message.PublicKey = wallet.PublicKeyXML;
+
+    }
     private async Task PostMessage()
     {
         try
         {
+          if(await  Encrypt()==false)
+            {
+                return;
+            }
+
             if (await Sign() == true)
             {
                 Http.DefaultRequestHeaders.Clear();
@@ -70,10 +83,30 @@
             err = ex.Message;
         }
     }
+    async Task<bool> Encrypt()
+    {
+ 
+        var r = await Http.PostAsJsonAsync("Digital/EncryptMsg", trans);
+        if (r.IsSuccessStatusCode)
+        {
+            var resmodel = await r.Content.ReadAsStringAsync();
+            trans.Message.Txt = resmodel;
+            toast.ShowSuccess("Encryptes");
+            return true;   
+        }
+        else
+        {
+            var err = await r.Content.ReadAsStringAsync();
+            toast.ShowError(err);
+            return false;
+        }
+
+    }
+
     async Task<bool> Sign()
     {
         trans.PrivateKey =wallet.PrivateKey;// "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b";
-        trans.Message.PublicKey = wallet.PublicKey;
+        trans.Message.PublicKey = wallet.PublicKeyXML;
         trans.Message.MsgHash = msghash.HashAlgoStd(trans.Message);
         var r = await Http.PostAsJsonAsync("Digital/Sign", trans);
         if (r.IsSuccessStatusCode)

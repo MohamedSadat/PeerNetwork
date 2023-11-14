@@ -18,6 +18,7 @@
             <div class="card m-1 p-1">
                 <div class="card-header">
                     <h5>Node: @msg.NodePubKey</h5>
+              
                     <h6>Sender: @msg.Sender </h6>
                     <h6>Receiver: @msg.Receiver</h6>
 
@@ -27,6 +28,7 @@
                     <p>Amount @msg.Amount</p>
                     <p>Text @msg.Txt</p>
                     <p>Time stamp @msg.TimeStamp</p>
+                    <button class="m-1 p-1 btn btn-primary" @onclick="(()=>Decrypt(msg))">Decrypt</button>
 
                 </div>
             </div>
@@ -47,7 +49,7 @@
         {
             PublicKey = wallet.PublicKey;   
         }
-    //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
+        //  Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", StateContainer.Token);
         try
         {
             messages = await Http.GetFromJsonAsync<List<MessageModel>>($"Message/MyMessage/{wallet.PublicKey}");
@@ -58,6 +60,46 @@
             err = ex.Message;
         }
 
+    }
+    private async Task Decrypt(MessageModel msg)
+    {
+        try
+        {
+            if(msg.Sender==wallet.PublicKey)
+            {
+                var trans = new TransactionModel
+                    {
+                        Message = msg,
+                        PublicKeyXML = wallet.PublicKeyXML,
+                    };
+                var rpost = await Http.PostAsJsonAsync("Digital/DecryptMsg", trans);
+                if (rpost.IsSuccessStatusCode)
+                {
+                    var res = await rpost.Content.ReadAsStringAsync();
+                    msg.Txt = res;
+                }
+
+            }
+            else
+            {
+                var trans = new TransactionModel
+                    {
+                        Message = msg,
+                        PublicKeyXML = msg.PublicKey,
+                    };
+                var rpost = await Http.PostAsJsonAsync("Digital/DecryptMsg", trans);
+                if (rpost.IsSuccessStatusCode)
+                {
+                    var res = await rpost.Content.ReadAsStringAsync();
+                    msg.Txt = res;
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            err = ex.Message;
+        }
     }
 
 }

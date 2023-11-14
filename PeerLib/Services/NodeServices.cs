@@ -10,9 +10,9 @@ namespace PeerLib.Services
 {
     public class NodeServices
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
 
-        public NodeServices(AppModel app)
+        public NodeServices(BlovkChainAppModel app)
         {
             this.app = app;
         }

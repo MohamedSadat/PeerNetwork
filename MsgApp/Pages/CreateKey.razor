@@ -32,8 +32,28 @@
         //  6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
         await localStorage.SetItemAsStringAsync("privatekey", wallet.PrivateKey);
         await localStorage.SetItemAsStringAsync("publickey", wallet.PublicKey);
+        toast.ShowSuccess("Key Generated");
+        //  await localStorage.SetItemAsStringAsync("NodeAddress", wallet.NodeAddress);
+        await GenPubXml();
+    }
+    async Task GenPubXml()
+    {
+        var rpost = await Http.PostAsJsonAsync("Digital/GeneratePubKeyXml", wallet);
+        if (rpost.IsSuccessStatusCode)
+        {
+            var resmodel = await rpost.Content.ReadFromJsonAsync<WalletAppModel>();
+            wallet.PublicKeyXML = resmodel.PublicKeyXML;
+            wallet.PrivateKeyXml = resmodel.PrivateKeyXml;
+            await localStorage.SetItemAsStringAsync("PublicKeyXML", wallet.PublicKeyXML);
+            await localStorage.SetItemAsStringAsync("PrivateKeyXml", wallet.PrivateKeyXml);
+            toast.ShowSuccess("Saved");
+        }
+        else
+        {
+            var err = await rpost.Content.ReadAsStringAsync();
+            toast.ShowError(err);
+        }
 
-      //  await localStorage.SetItemAsStringAsync("NodeAddress", wallet.NodeAddress);
 
     }
 }

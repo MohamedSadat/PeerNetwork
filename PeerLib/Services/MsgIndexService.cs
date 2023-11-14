@@ -9,10 +9,10 @@ namespace PeerLib.Services
 {
     public class MsgIndexService
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
         private readonly NodeServices inode;
 
-        public MsgIndexService(AppModel app, NodeServices inode)
+        public MsgIndexService(BlovkChainAppModel app, NodeServices inode)
         {
             this.app = app;
             this.inode = inode;
@@ -60,26 +60,35 @@ namespace PeerLib.Services
         }
         public List<MsgIndexModel> GetIndexesByKey(string key)
         {
-            var msgindexes = new List<MsgIndexModel>();
-            using (var stream = File.Open($"{app.DataPath}indexes.dat", FileMode.Open))
+            try
             {
-                //      Console.WriteLine("Size is {0}", stream.Length);
-                using (var reader = new BinaryReader(stream, Encoding.UTF8))
+
+
+                var msgindexes = new List<MsgIndexModel>();
+                using (var stream = File.Open($"{app.DataPath}indexes.dat", FileMode.Open))
                 {
-                    while (reader.PeekChar() > -1)
+                    //      Console.WriteLine("Size is {0}", stream.Length);
+                    using (var reader = new BinaryReader(stream, Encoding.UTF8))
                     {
-                        var msg = new MsgIndexModel();
-                        msg.Height = reader.ReadInt64();
-                        msg.Sender = reader.ReadString();
-                        msg.Receiver = reader.ReadString();
-                        if (msg.Sender == key || msg.Receiver == key)
+                        while (reader.PeekChar() > -1)
                         {
-                            msgindexes.Add(msg);
+                            var msg = new MsgIndexModel();
+                            msg.Height = reader.ReadInt64();
+                            msg.Sender = reader.ReadString();
+                            msg.Receiver = reader.ReadString();
+                            if (msg.Sender == key || msg.Receiver == key)
+                            {
+                                msgindexes.Add(msg);
+                            }
                         }
                     }
                 }
+                return msgindexes;
             }
-            return msgindexes;
+            catch(Exception ex)
+            {
+                return new List<MsgIndexModel>();
+            }
 
         }
     }

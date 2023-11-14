@@ -9,11 +9,11 @@ namespace PeerLib.Services
 {
     public class BlockService
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
         private readonly BlockIndexService blockIndex;
         private readonly MsgHashService msgHash;
 
-        public BlockService(AppModel app,BlockIndexService blockIndex,MsgHashService msgHash)
+        public BlockService(BlovkChainAppModel app,BlockIndexService blockIndex,MsgHashService msgHash)
         {
             this.app = app;
             this.blockIndex = blockIndex;

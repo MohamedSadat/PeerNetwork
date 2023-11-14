@@ -11,13 +11,13 @@ namespace PeerLib.Services
 {
     public class MsgService
     {
-        private readonly AppModel app;
+        private readonly BlovkChainAppModel app;
         private readonly NodeServices inode;
         private readonly MsgIndexService msgIndex;
         private readonly MsgHashService msgHash;
         private readonly MsgSign sign;
 
-        public MsgService(AppModel app,NodeServices inode, MsgIndexService msgIndex,MsgHashService msgHash,MsgSign sign)
+        public MsgService(BlovkChainAppModel app,NodeServices inode, MsgIndexService msgIndex,MsgHashService msgHash,MsgSign sign)
         {
             this.app = app;
             this.inode = inode;
@@ -52,7 +52,6 @@ namespace PeerLib.Services
                 f.Close();
 
             }
-            app.Node.Messages.Push(msg);
             using (var stream = File.Open($"{app.DataPath}msg.dat", FileMode.Append))
             {
                 //Append will add to the end of the file
@@ -76,6 +75,8 @@ namespace PeerLib.Services
 
                 }
             }
+            app.Node.Messages.Push(msg);
+
             msgIndex.WriteIndex(msg);
             return r;
       
