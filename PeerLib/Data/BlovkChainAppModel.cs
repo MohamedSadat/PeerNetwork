@@ -9,6 +9,8 @@ namespace PeerLib.Data
     public class BlovkChainAppModel
     {
         public string DataPath { get; set; } = "Server\\";
+        public string ContractsPath { get; set; } = "Server\\contracts";
+
         public NodeModel Node { get; set; } = new NodeModel();
         public List<string> Logs { get; set; } = new List<string>();
     }

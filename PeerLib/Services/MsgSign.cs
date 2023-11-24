@@ -1,10 +1,15 @@
-﻿using PeerLib.Data;
+﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using PeerLib.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Asn1.Sec;
 
 namespace PeerLib.Services
 {
@@ -35,6 +40,10 @@ namespace PeerLib.Services
             pubkey = rsa.ToXmlString(true);
             wallet.PublicKeyXML = pubkey;
             wallet.PrivateKeyXml = _privateKey;
+
+
+
+            
             return pubkey;
 
         }
@@ -159,5 +168,7 @@ namespace PeerLib.Services
             }
 
         }
+
+ 
     }
 }

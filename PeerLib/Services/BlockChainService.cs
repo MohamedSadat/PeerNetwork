@@ -20,7 +20,12 @@ namespace PeerLib.Services
             if (Path.Exists($"{app.DataPath}") == false)
             {
                 var f = Directory.CreateDirectory($"{app.DataPath}");
-                
+               
+            }
+            if (Path.Exists(("contracts")) == false)
+            {
+                var f = Directory.CreateDirectory($"contracts");
+
             }
             if (File.Exists($"{app.DataPath}nodes.dat") == false)
             {

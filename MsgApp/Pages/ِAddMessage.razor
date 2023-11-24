@@ -16,8 +16,6 @@
 <EditForm Model="trans.Message" OnValidSubmit="PostMessage">
     <DataAnnotationsValidator />
 <ValidationSummary />
-<label class="form-label" for="Sender">Sender</label>
-    <InputText class="form-control" id="Sender" @bind-Value="trans.Message.Sender" />
     <label class="form-label" for="Receiver">Receiver</label>
     <InputText class="form-control" id="Receiver" @bind-Value="trans.Message.Receiver" />
 
